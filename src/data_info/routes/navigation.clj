@@ -3,6 +3,7 @@
         [data-info.routes.schemas.common :only [get-error-code-block]]
         [ring.util.http-response :only [ok]])
   (:require [common-swagger-api.schema.data.navigation :as schema]
+            [otel.middleware :refer [otel-middleware]]
             [data-info.services.directory :as dir]
             [data-info.services.root :as root]
             [data-info.services.home :as home]
@@ -16,6 +17,7 @@
     (GET "/base-paths" [:as {uri :uri}]
       :query [{:keys [user]} StandardUserQueryParams]
       :return schema/UserBasePaths
+      :middleware [otel-middleware]
       :summary "Get User's Base Paths"
       :description (str
 "This endpoint returns the base paths of the user's home directory, trash, and the base trash path."
@@ -26,6 +28,7 @@
     (GET "/home" [:as {uri :uri}]
       :query [params StandardUserQueryParams]
       :return schema/RootListing
+      :middleware [otel-middleware]
       :summary "Get User's Home Dir"
       :description (str
 "This endpoint returns the ID and path of a user's home directory, creating it if it does not
@@ -37,6 +40,7 @@
     (GET "/root" [:as {uri :uri}]
       :query [{:keys [user]} StandardUserQueryParams]
       :responses schema/NavigationRootResponses
+      :middleware [otel-middleware]
       :summary schema/NavigationRootSummary
       :description schema/NavigationRootDocs
       (ok (root/do-root-listing user)))
@@ -45,6 +49,7 @@
       :path-params [zone :- String]
       :query [params StandardUserQueryParams]
       :responses schema/NavigationResponses
+      :middleware [otel-middleware]
       :no-doc true
       (ok (dir/do-directory zone path params)))
 

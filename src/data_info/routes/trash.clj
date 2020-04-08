@@ -4,6 +4,7 @@
         [data-info.routes.schemas.common]
         [data-info.routes.schemas.trash])
   (:require [data-info.services.trash :as trash]
+            [otel.middleware :refer [otel-middleware]]
             [data-info.util.service :as svc]))
 
 (defroutes trash
@@ -11,6 +12,7 @@
       :tags ["data"]
       :query [params StandardUserQueryParams]
       :return Trash
+      :middleware [otel-middleware]
       :summary "Empty Trash"
       :description (str
   "Empty the trash of the user provided.")
@@ -21,6 +23,7 @@
       :query [params StandardUserQueryParams]
       :body [body (describe Paths "The paths to move to the trash")]
       :return (doc-only TrashPaths TrashPathsDoc)
+      :middleware [otel-middleware]
       :summary "Delete Data Items"
       :description (str
   "Delete the data items with the listed paths."
@@ -33,6 +36,7 @@
       :query [params StandardUserQueryParams]
       :body [body (describe OptionalPaths "The paths to restore, or an empty or missing list to restore the whole trash")]
       :return (doc-only Restoration RestorationPaths)
+      :middleware [otel-middleware]
       :summary "Restore Data Items"
       :description (str
   "Restore the data items with the listed paths from the trash to their original locations, or the user home directory if their original location information is not available."
@@ -47,6 +51,7 @@
       (DELETE "/" [:as {uri :uri}]
         :query [params StandardUserQueryParams]
         :return TrashPaths
+        :middleware [otel-middleware]
         :summary "Delete Data Item"
         :description (str
   "Deletes the data item with the provided UUID."
@@ -57,6 +62,7 @@
       (DELETE "/children" [:as {uri :uri}]
         :query [params StandardUserQueryParams]
         :return TrashPaths
+        :middleware [otel-middleware]
         :summary "Delete Data Item Contents"
         :description (str
   "Deletes the contents of the folder with the provided UUID."

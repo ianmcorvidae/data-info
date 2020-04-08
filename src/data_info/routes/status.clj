@@ -6,6 +6,7 @@
             [data-info.services.status :as status]
             [data-info.util.config :as config]
             [data-info.util.service :as service]
+            [otel.middleware :refer [otel-middleware]]
             [ring.util.http-response :refer [ok internal-server-error]]
             [schema.core :as s]))
 
@@ -16,6 +17,8 @@
       :tags ["service-info"]
       :summary "Service Information"
       :description "This endpoint provides the name of the service and its version."
+      :middleware [otel-middleware]
+
       (ce/trap uri
         #((if (and expecting (not= expecting (:app-name config/svc-info))) internal-server-error ok)
            (assoc (commons-service/get-docs-status config/svc-info server-name server-port config/docs-uri expecting)
@@ -26,4 +29,5 @@
       :tags ["service-info"]
       :summary "Configuration Information"
       :description "This endpoint provides the service's currently-running configuration, with private values such as credentials filtered out."
+      :middleware [otel-middleware]
       (service/trap uri config/masked-config)))

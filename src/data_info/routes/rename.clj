@@ -3,6 +3,7 @@
         [data-info.routes.schemas.common]
         [data-info.routes.schemas.rename])
   (:require [data-info.services.rename :as rename]
+            [otel.middleware :refer [otel-middleware]]
             [data-info.util.service :as svc]))
 
 (defroutes rename-routes
@@ -11,6 +12,7 @@
     :query [params StandardUserQueryParams]
     :body [body (describe MultiRenameRequest "The paths to rename and their destination.")]
     :return MultiRenameResult
+    :middleware [otel-middleware]
     :summary "Move Data Items"
     :description (str
 "Given a list of sources and a destination in the body, moves all the sources into the given destination directory."
@@ -25,6 +27,7 @@
       :query [params StandardUserQueryParams]
       :body [body (describe Filename "The new name of the data item.")]
       :return RenameResult
+      :middleware [otel-middleware]
       :summary "Rename Data Item"
       :description (str
 "Moves the data item with the provided UUID to a new name within the same folder."
@@ -36,6 +39,7 @@
       :query [params StandardUserQueryParams]
       :body [body (describe Dirname "The new directory name of the data item.")]
       :return RenameResult
+      :middleware [otel-middleware]
       :summary "Move Data Item"
       :description (str
 "Moves the data item with the provided UUID to a new folder, retaining its name."
@@ -47,6 +51,7 @@
       :query [params StandardUserQueryParams]
       :body [body (describe Dirname "The new directory name of the data items.")]
       :return MultiRenameResult
+      :middleware [otel-middleware]
       :summary "Move Data Item Contents"
       :description (str
 "Moves the contents of the folder with the provided UUID to a new folder, retaining their filenames."

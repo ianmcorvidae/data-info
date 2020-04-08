@@ -5,6 +5,7 @@
         [ring.util.http-response :only [ok]])
   (:require [common-swagger-api.schema.data :as data-schema]
             [common-swagger-api.schema.stats :as schema]
+            [otel.middleware :refer [otel-middleware]]
             [data-info.services.stat :as stat]))
 
 (defroutes stat-gatherer
@@ -18,6 +19,7 @@
       :query [params StatQueryParams]
       :body [body data-schema/OptionalPathsOrDataIds]
       :responses schema/StatResponses
+      :middleware [otel-middleware]
       :summary schema/StatSummary
       :description (str schema/StatDocs
                         " Potentially also validating permissions on the files/folders for the user provided.")
@@ -34,6 +36,7 @@
                               :description "File and Folder Filtered Status Response."}
                          500 {:schema      schema/StatErrorResponses
                               :description data-schema/CommonErrorCodeDocs}})
+      :middleware [otel-middleware]
       :summary "File and Folder Status Information (allowing filtering)"
       :description (str "This endpoint allows the caller to get information about many files and folders at once, "
                         "potentially also validating permissions on the files/folders for the user provided. "

@@ -3,6 +3,7 @@
         [data-info.routes.schemas.common]
         [data-info.routes.schemas.permissions])
   (:require [data-info.services.users :as users]
+            [otel.middleware :refer [otel-middleware]]
             [data-info.services.permissions :as perms]
             [data-info.util.service :as svc]))
 
@@ -15,6 +16,7 @@
       :query [params StandardUserQueryParams]
       :body [body (describe Paths "The paths to gather permissions information on.")]
       :return PermissionsResponse
+      :middleware [otel-middleware]
       :summary "File and Folder Permissions Information"
       :description (str
 "This endpoint allows the caller to get user permissions information about many files and folders at once."
@@ -33,6 +35,7 @@
       (GET "/" [:as {uri :uri}]
         :query [params StandardUserQueryParams]
         :return DataItemPermissionsResponse
+        :middleware [otel-middleware]
         :summary "List Data Item Permissions"
         :description (str
 "Lists permissions for a data item."
@@ -44,6 +47,7 @@
                       permission :- (describe PermissionEnum "The permission level to grant.")]
         :query [params StandardUserQueryParams]
         :return DataItemPermissionsResponse
+        :middleware [otel-middleware]
         :summary "Grant Data Item Permissions"
         :description (str
 "Grants access to a data item."
@@ -54,6 +58,7 @@
         :path-params [unshare-with :- (describe NonBlankString "The user whose permissions will be revoked.")]
         :query [params StandardUserQueryParams]
         :return DataItemPermissionsResponse
+        :middleware [otel-middleware]
         :summary "Revoke Data Item Permissions"
         :description (str
 "Revokes access to a data item."

@@ -6,7 +6,13 @@
             [clojure-commons.error-codes :as ce]
             [clojure.tools.logging :as log]
             [common-cfg.cfg :as cfg]
-            [metadata-client.core :as metadata-client]))
+            [metadata-client.core :as metadata-client])
+  (:import [io.grpc ManagedChannelBuilder]
+           [io.opentelemetry.sdk OpenTelemetrySdk]
+           [io.opentelemetry.sdk.trace.export SimpleSpansProcessor]
+           [io.opentelemetry.exporters.logging LoggingSpanExporter]
+           [io.opentelemetry.exporters.jaeger JaegerGrpcSpanExporter]))
+
 
 (def docs-uri "/docs")
 
@@ -321,6 +327,22 @@
 
 (def metadata-client
   (memoize #(metadata-client/new-metadata-client (metadata-base-url))))
+
+(defn- add-jaeger
+  [tracer-provider ip port]
+  (let [jaeger-channel (.build (.usePlaintext (ManagedChannelBuilder/forAddress ip port)))
+        exporter (.build (.setDeadlineMs (.setChannel (.setServiceName (JaegerGrpcSpanExporter/newBuilder) "data-info") jaeger-channel) 30000))]
+    (.addSpanProcessor tracer-provider (.build (SimpleSpansProcessor/newBuilder exporter)))))
+
+(defn- add-log-exporter
+  [tracer-provider]
+  (.addSpanProcessor tracer-provider (.build (SimpleSpansProcessor/newBuilder (LoggingSpanExporter.)))))
+
+(defn setup-opentelemetry-tracer
+  []
+  (let [tracer-provider (OpenTelemetrySdk/getTracerProvider)]
+    (add-log-exporter tracer-provider)
+    (add-jaeger tracer-provider "localhost" 14250)))
 
 (defn load-config-from-file
   "Loads the configuration settings from a file."

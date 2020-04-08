@@ -4,6 +4,7 @@
         [data-info.routes.schemas.path-lists]
         [data-info.routes.schemas.stats])
   (:require [data-info.services.path-lists :as path-list-svc]
+            [otel.middleware :refer [otel-middleware]]
             [data-info.util.service :as svc]))
 
 (defroutes path-list-creator
@@ -15,6 +16,7 @@
           :body [body (describe Paths "The folder or file paths to process for the HT Path List file contents.")]
           :responses {200 {:schema      FileStat
                            :description "File info for the saved HT Path List file."}}
+          :middleware [otel-middleware]
           :summary "Create an HT Path List File"
           :description
           (str

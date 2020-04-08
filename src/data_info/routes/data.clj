@@ -14,6 +14,7 @@
             [data-info.services.page-tabular :as page-tabular]
             [data-info.services.uuids :as uuids]
             [data-info.util.config :as cfg]
+            [otel.middleware :refer [otel-middleware]]
             [tree-urls-client.middleware :refer [wrap-tree-urls-base]]
             [clojure-commons.error-codes :as ce]
             [data-info.util.service :as svc]))
@@ -28,12 +29,14 @@
     (GET "/uuid" [:as {uri :uri}]
       :query [params PathToUUIDParams]
       :return PathToUUIDReturn
+      :middleware [otel-middleware]
       :summary "Get the UUID for a path"
       :description (str "Get a UUID for a path provided as a query parameter."
 (get-error-code-block "ERR_DOES_NOT_EXIST, ERR_NOT_READABLE, ERR_NOT_A_USER"))
       (svc/trap uri uuids/do-simple-uuid-for-path params))
 
     (GET "/path/:zone/*" [:as {{zone :zone path :*} :params uri :uri}]
+      :middleware [otel-middleware]
       :query [params FolderListingParams]
       :no-doc true
       (ce/trap uri entry/dispatch-path-to-resource zone path params))
@@ -60,7 +63,8 @@
     (POST "/" [:as {uri :uri}]
       :query [params FileUploadQueryParams]
       :multipart-params [file :- String]
-      :middleware [write/wrap-multipart-create]
+      :middleware [otel-middleware
+                   write/wrap-multipart-create]
       :return FileStat
       :summary "Upload a file"
       :description (str
@@ -73,6 +77,7 @@
       :query [params StandardUserQueryParams]
       :body [body (describe Paths "The paths to create.")]
       :return Paths
+      :middleware [otel-middleware]
       :summary "Create Directories"
       :description (str
 "Creates a directory, as well as any intermediate directories that do not already exist, given as a
@@ -95,6 +100,7 @@ with characters in a runtime-configurable parameter. Currently, this parameter l
                     403 {:description "User does not have read permissions for given data item."}
                     404 {:description "Data Item ID does not exist."}
                     422 {:description "User does not exist or an internal error occurred."}}
+        :middleware [otel-middleware]
         :summary "Data Item Meta-Status"
         :description "Returns an HTTP status according to the user's access level to the data item."
         (ce/trap uri entry/id-entry data-id user))
@@ -102,7 +108,8 @@ with characters in a runtime-configurable parameter. Currently, this parameter l
       (PUT "/" [:as {uri :uri}]
         :query [params StandardUserQueryParams]
         :multipart-params [file :- String]
-        :middleware [write/wrap-multipart-overwrite]
+        :middleware [otel-middleware
+                     write/wrap-multipart-overwrite]
         :return FileStat
         :summary "Overwrite Contents"
         :description (str
@@ -112,7 +119,8 @@ with characters in a runtime-configurable parameter. Currently, this parameter l
 
       (GET "/manifest" [:as {uri :uri}]
         :query [{:keys [user]} StandardUserQueryParams]
-        :middleware [tree-urls-middleware]
+        :middleware [otel-middleware
+                     tree-urls-middleware]
         :return Manifest
         :summary "Return file manifest"
         :description (str
@@ -123,6 +131,7 @@ with characters in a runtime-configurable parameter. Currently, this parameter l
       (GET "/chunks" [:as {uri :uri}]
         :query [params ChunkParams]
         :return ChunkReturn
+        :middleware [otel-middleware]
         :summary "Get File Chunk"
         :description (str
   "Gets the chunk of the file of the specified position and size."
@@ -133,6 +142,7 @@ with characters in a runtime-configurable parameter. Currently, this parameter l
       (GET "/chunks-tabular" [:as {uri :uri}]
         :query [params TabularChunkParams]
         :return (doc-only TabularChunkReturn TabularChunkDoc)
+        :middleware [otel-middleware]
         :summary "Get Tabular File Chunk"
         :description (str
   "Gets the specified page of the tabular file, with a page size roughly corresponding to the provided size. The size is not precisely guaranteed, because partial lines cannot be correctly parsed."
@@ -144,6 +154,7 @@ with characters in a runtime-configurable parameter. Currently, this parameter l
         :query [params StandardUserQueryParams]
         :body [body (describe MetadataSaveRequest "The metadata save request.")]
         :return FileStat
+        :middleware [otel-middleware]
         :summary "Exporting Metadata to a File"
         :description (str
   "Exports file/folder details in a JSON format (similar to the /stat-gatherer endpoint response),
@@ -161,6 +172,7 @@ with characters in a runtime-configurable parameter. Currently, this parameter l
       (POST "/ore/save" [:as {uri :uri}]
         :query [params StandardUserQueryParams]
         :summary "Generating an OAI-ORE File for a Data Set"
+        :middleware [otel-middleware]
         :description (str
   "Generates an OAI-ORE file serialized as RDF/XML for the data set and saves it in a separate
   folder in the data store. The user must have write access to the data set folder, and must be able

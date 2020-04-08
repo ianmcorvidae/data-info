@@ -4,6 +4,7 @@
         [data-info.routes.schemas.common]
         [data-info.routes.schemas.avus])
   (:require [data-info.services.metadata :as meta]
+            [otel.middleware :refer [otel-middleware]]
             [data-info.util.service :as svc]))
 
 (defroutes avus-routes
@@ -14,6 +15,7 @@
     (GET "/metadata" [:as {uri :uri}]
       :query [{:keys [user]} StandardUserQueryParams]
       :return AVUGetResult
+      :middleware [otel-middleware]
       :summary "List AVUs (administrative)"
       :description
           (str "List all AVUs associated with a data item. Include administrative/system iRODS AVUs.
@@ -30,6 +32,7 @@
       :query [{:keys [user]} StandardUserQueryParams]
       :body [body (describe AddMetadataRequest "The iRODS and Metadata AVUs to add")]
       :return AVUChangeResult
+      :middleware [otel-middleware]
       :summary "Add AVUs (administrative)"
       :description
             (str "Associate iRODS and Metadata AVUs with a data item. Allow adding any AVU.
@@ -49,6 +52,7 @@
     (GET "/metadata" [:as {uri :uri}]
       :query [{:keys [user]} StandardUserQueryParams]
       :return AVUGetResult
+      :middleware [otel-middleware]
       :summary "List AVUs"
       :description
           (str "List all AVUs associated with a data item.
@@ -65,6 +69,7 @@
       :query [{:keys [user]} StandardUserQueryParams]
       :body [body (describe AddMetadataRequest "The iRODS and Metadata AVUs to add")]
       :return AVUChangeResult
+      :middleware [otel-middleware]
       :summary "Add AVUs"
       :description
             (str "Associate iRODS and Metadata AVUs with a data item.
@@ -84,6 +89,7 @@
                             "A list of AVUs to set for this file.
                              May not include administrative AVUs, and will not delete them.")]
       :return AVUChangeResult
+      :middleware [otel-middleware]
       :summary "Set AVUs"
       :description
            (str "Set the iRODS and metadata AVUS for a data item to a provided set.
@@ -102,6 +108,7 @@
       :query [{:keys [user]} StandardUserQueryParams]
       :body [{:keys [destination_ids]} (describe MetadataCopyRequest "The destination data items.")]
       :return MetadataCopyResult
+      :middleware [otel-middleware]
       :summary "Copy Metadata"
       :description
            (str "Copies all IRODS AVUs visible to the client and Metadata AVUs from the data
@@ -115,6 +122,7 @@
     (POST "/metadata/csv-parser" [:as {uri :uri}]
       :query [params MetadataCSVParseParams]
       :return MetadataCSVParseResult
+      :middleware [otel-middleware]
       :summary "Add Batch Metadata from CSV File"
       :description
            (str "This endpoint will parse a CSV/TSV file of metadata to apply to data items.

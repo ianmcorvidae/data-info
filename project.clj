@@ -29,6 +29,15 @@
                  [metosin/compojure-api "1.1.8"]
                  [org.apache.tika/tika-core "1.16"]
                  [net.sf.opencsv/opencsv "2.3"]
+                 [org.cyverse/otel "0.1.0-SNAPSHOT"]
+                 ;; All these io.grpc are set up explicitly to avoid "WARNING!!!version ranges found for:" spew from leiningen
+                 [io.grpc/grpc-api "1.28.0"]
+                 [io.grpc/grpc-core "1.28.0" :exclusions [io.grpc/grpc-api]]
+                 [io.grpc/grpc-protobuf "1.28.0"]
+                 [io.grpc/grpc-netty-shaded "1.28.0" :exclusions [io.grpc/grpc-core]]
+                 [io.opentelemetry/opentelemetry-sdk "0.3.0"]
+                 [io.opentelemetry/opentelemetry-exporters-logging "0.3.0"]
+                 [io.opentelemetry/opentelemetry-exporters-jaeger "0.3.0"]
                  [de.ubercode.clostache/clostache "1.4.0" :exclusions [org.clojure/core.incubator]]
                  [slingshot "0.12.2"]
                  [org.cyverse/clj-icat-direct "2.8.6"

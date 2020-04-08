@@ -107,6 +107,7 @@
       (when-not (fs/readable? (:config options))
         (ccli/exit 1 "The config file is not readable."))
       (load-configuration-from-file (:config options))
+      (config/setup-opentelemetry-tracer)
       (icat/configure-icat)
       (.start (Thread. listen-for-events))
       (run-jetty))))

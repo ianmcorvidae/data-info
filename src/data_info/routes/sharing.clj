@@ -3,6 +3,7 @@
         [data-info.routes.schemas.common]
         [data-info.routes.schemas.sharing])
   (:require [data-info.services.sharing :as sharing]
+            [otel.middleware :refer [otel-middleware]]
             [data-info.util.service :as svc]))
 
 (defroutes sharing-routes
@@ -11,6 +12,7 @@
     :query [params StandardUserQueryParams]
     :body [body (describe Paths "The paths to make readable by the anonymous user.")]
     :return (doc-only AnonShareInfo AnonShareResponse)
+    :middleware [otel-middleware]
     :summary "Make Data Items Anonymously Readable"
     :description (str
 "Given a list of files in the body, makes the files readable by the anonymous user."
