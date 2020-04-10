@@ -340,7 +340,7 @@
 
 (defn setup-opentelemetry-tracer
   []
-  (let [tracer-provider (OpenTelemetrySdk/getTracerProvider)]
+  #_(let [tracer-provider (OpenTelemetrySdk/getTracerProvider)]
     (add-log-exporter tracer-provider)
     (add-jaeger tracer-provider "localhost" 14250)))
 
