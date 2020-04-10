@@ -77,4 +77,8 @@
          :port 31360
          :auto-reload? false}
   :uberjar-exclusions [#".*[.]SF" #"LICENSE" #"NOTICE"]
-  :jvm-opts ["-Dlogback.configurationFile=/etc/iplant/de/logging/data-info-logging.xml"])
+  :jvm-opts ["-Dlogback.configurationFile=/etc/iplant/de/logging/data-info-logging.xml"
+             "-javaagent:/home/mian/opentelemetry-auto-intstr-java/opentelemetry-auto-0.2.2.jar"
+             "-Dota.exporter.jar=/home/mian/opentelemetry-auto-intstr-java/opentelemetry-auto-exporters-jaeger-0.2.2.jar"
+             "-Dota.exporter.jaeger.service.name=data-info"
+             "-Dota.exporter.jaeger.endpoint=localhost:14250"])
