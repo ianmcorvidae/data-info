@@ -28,3 +28,4 @@ test2junit
 telepresence.log
 data-info.properties
 .eastwood
+!/otel/*.jar

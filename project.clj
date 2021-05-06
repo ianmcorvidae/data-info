@@ -30,7 +30,7 @@
                  [javax.servlet/servlet-api "2.5"]
                  [metosin/compojure-api "1.1.13"]
                  [ring/ring-jetty-adapter "1.6.3"] ;; update this when underlying ring version changes, probably
-                 [org.cyverse/otel "0.2.3"]
+                 [org.cyverse/otel "0.2.4"]
                  [org.cyverse/clj-irods "0.2.2"]
                  [org.cyverse/clj-icat-direct "2.9.3"
                    :exclusions [[org.slf4j/slf4j-log4j12]
@@ -70,4 +70,4 @@
          :port 31360
          :auto-reload? false}
   :uberjar-exclusions [#".*[.]SF" #"LICENSE" #"NOTICE"]
-  :jvm-opts ["-Dlogback.configurationFile=/etc/iplant/de/logging/data-info-logging.xml"])
+  :jvm-opts ["-javaagent:./otel/opentelemetry-javaagent-all-1.1.0.jar" "-Dotel.metrics.exporter=none" "-Dotel.resource.attributes=service.name=data-info,service.namespace=org.cyverse" "-Dlogback.configurationFile=/etc/iplant/de/logging/data-info-logging.xml"])
