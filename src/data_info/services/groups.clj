@@ -9,6 +9,12 @@
             [data-info.util.irods :as irods]
             [data-info.util.validators :as validators]))
 
+(defn list-groups-by-prefix
+  [{user :user prefix :prefix}]
+  (irods/with-jargon-exceptions [cm]
+    (validators/user-exists cm user)
+    (users/list-groups cm (str prefix "%"))))
+
 (defn get-group
   [{user :user} group-name]
   (irods/with-jargon-exceptions [cm]

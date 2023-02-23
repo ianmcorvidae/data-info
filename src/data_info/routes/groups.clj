@@ -42,9 +42,20 @@
   (assoc GroupErrorResponses
          :error_code DeleteErrorCodes))
 
+(s/defschema ListParams
+  (assoc StandardUserQueryParams
+         :prefix String))
+
 (defroutes groups-routes
   (context "/groups" []
     :tags ["groups"]
+
+    (GET "/" []
+      :middleware  [otel-middleware]
+      :query       [params ListParams]
+      :summary     "List groups"
+      :description "List groups (as qualified names) given a prefix to match"
+      (ok (groups/list-groups params)))
 
     (POST "/" []
       :middleware  [otel-middleware]
